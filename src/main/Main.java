@@ -8,39 +8,32 @@ public class Main{
 public static void main(String []agrs) {
 	new DrawGraphics();
 }
-public static void bellmanford(Graph g, int source,int end) {
-	System.out.println("s:"+source+"end:"+end);
-	for(int i =0;i<g.getEdges().size();i++) {
-		System.out.println("f: "+g.getEdges().get(i).getFirstPoint()+"l:"+g.getEdges().get(i).getLastPoint()+"w:"+g.getEdges().get(i).getWeight());
-	}
-	
+public static void bellmanford(Graph g, int source,int end) {	
 	int i, j, u, v, w;
 	int tV = g.getV(); //tổng số đỉnh của đồ thị
 	int tE = g.getE(); //tổng số cạnh
-
+	//B1
 	int d[] = new int[tV];  
 	int p[] = new int[tV]; 
-
 	for (i = 0; i < tV; i++) {
 		d[i] = INFINITY;
 		p[i] = 0;
 	}
-	
 	d[source] = 0;
-	
+	//B2
 	for(i = 0; i <tV-1; i++) {
 		for(j = 0; j < tE; j++) {
 			//get data
 			u = g.getEdges().get(j).getFirstPoint();
 			v = g.getEdges().get(j).getLastPoint();
 			w = g.getEdges().get(j).getWeight();
-			
 			if(d[u] != INFINITY && d[v] > d[u] + w) {
 				d[v] = d[u] + w;
 				p[v] = u;
 			}
 		}
 	}
+   //B3
 	for(i = 0; i < tE; i++) {
 		u = g.getEdges().get(i).getFirstPoint();
 		v = g.getEdges().get(i).getLastPoint();
@@ -51,12 +44,10 @@ public static void bellmanford(Graph g, int source,int end) {
 			return;
 		}
 	}
-	for(int i1=0;i1<p.length;i1++) {
-		System.out.println(p[i1]+"|");
-	}
 	timduong(p,source,end);
 	
 }
+
 private static void timduong(int[] p,int source, int end) {
 	result="";
 	int i =end;
