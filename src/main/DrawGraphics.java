@@ -223,6 +223,7 @@ if(e.getSource()==init) {
 }else if(e.getSource()==reset) {
 	setView(false);
 	bg=null;
+	edges.removeAll(edges);
 	frame.remove(matrix);
 	frame.repaint();
 	
@@ -315,11 +316,13 @@ private void drawMatrix(int[][] bg) {
 			int temp = bg[i][j];
 			if(temp==Main.INFINITY) {
 				JButton tmp = new JButton(String.valueOf("∞"));
+				tmp.setBackground(Color.PINK);
 				tmp.setMargin(new Insets(0, 0, 0, 0));
 				matrix.add(tmp);
 			}else {
 				JButton tmp = new JButton(String.valueOf(temp));
 				tmp.setMargin(new Insets(0, 0, 0, 0));
+				tmp.setBackground(Color.PINK);
 				matrix.add(tmp);
 			}
 			
