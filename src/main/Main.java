@@ -68,7 +68,7 @@ private static void timduong(int[] p,int source, int end) {
 	}else {
 		for(int j=roadlist.size()-1;j>0;j--) {
 			int temp = (int) roadlist.get(j)+1;
-			String kq =temp+" -> ";
+			String kq =temp+" → ";
 			result+=kq;
 		}
 		result+=(end+1)+"";	

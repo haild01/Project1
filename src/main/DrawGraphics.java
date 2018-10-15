@@ -9,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -145,6 +147,7 @@ public DrawGraphics() {
     saveResult = new JButton("Lưu kết quả(.txt)");
     saveResult.setBounds(130, 390, 140, 20);
     right.add(saveResult);
+    saveResult.addActionListener(this);
     setView(false);
 	frame.add(right);
 	frame.setVisible(true);
@@ -284,8 +287,30 @@ if(e.getSource()==init) {
     	 
     }
    
+}else if(e.getSource()==saveResult) {
+	JFileChooser fileChooser = new JFileChooser();	
+	fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
+	int userSelection = fileChooser.showSaveDialog(frame);
+	
+	if (userSelection == JFileChooser.APPROVE_OPTION) {
+	    File fileToSave = fileChooser.getSelectedFile();
+	    try {
+	        File f = new File(fileToSave.getAbsolutePath());
+	        FileWriter fw = new FileWriter(f);
+	        for(int i =0;i<bg.length;i++) {
+	        	for(int j=0;j<bg.length;j++) {
+	        		fw.write(bg[i][j]+"  ");	
+	        	}
+	        	fw.write("\r\n");
+	        }
+	        
+	        fw.close(); 
+	      } catch (IOException ex) {
+	        System.out.println("Loi ghi file: " + ex);
+	    }
 }
 	
+}
 }
 
 private void checkEdges() {
