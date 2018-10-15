@@ -44,26 +44,36 @@ public static void bellmanford(Graph g, int source,int end) {
 			return;
 		}
 	}
+	
 	timduong(p,source,end);
 	
 }
 
 private static void timduong(int[] p,int source, int end) {
+	int check = 0;
 	result="";
 	int i =end;
 	ArrayList roadlist = new ArrayList<>();
 	roadlist.add(end);
-	while(p[i] !=source) {
+	while(p[i] !=source && check < p.length+10) {
 		i=p[i];
 		roadlist.add(i);
+		check++;
 	}
 	roadlist.add(source);
-	for(int j=roadlist.size()-1;j>0;j--) {
-		int temp = (int) roadlist.get(j)+1;
-		String kq =temp+" -> ";
-		result+=kq;
+	if(source==end) {
+		result="Điểm đầu trùng điểm cuối";
+	}else if(check>p.length) {
+		result="Không tồn tại đường đi từ "+(source+1)+" đến "+(end+1);
+	}else {
+		for(int j=roadlist.size()-1;j>0;j--) {
+			int temp = (int) roadlist.get(j)+1;
+			String kq =temp+" -> ";
+			result+=kq;
+		}
+		result+=(end+1)+"";	
 	}
-	result+=(end+1)+"";
+	
 }
 
 }

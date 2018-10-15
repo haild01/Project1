@@ -190,7 +190,7 @@ if(e.getSource()==init) {
 	int en = Integer.parseInt(end)-1;
 	int st = Integer.parseInt(start)-1;
 	//khởi tạo cạnh
-	if(we!=Main.INFINITY&&en!=st) {
+	if(en!=st) {
 		bg[st][en]=we;
 		drawMatrix(bg);
 		Edge temp = new Edge(st, en, we);
@@ -204,11 +204,11 @@ if(e.getSource()==init) {
 		}
 		if(check==-1) {
 			edges.add(temp);
+			this.E++;
 		}else {
 			edges.set(check,temp);
 		}	
 	}
-	
 	frame.setVisible(true);
 }else if(e.getSource()==gofind) {
 	String st=from.getSelectedItem();
@@ -265,6 +265,7 @@ if(e.getSource()==init) {
 					}
 				}
 			}
+			
 			matrix = new JPanel(new GridLayout(this.V,this.V));
 			matrix.setBounds(120, 20, 250, 250);
 			drawMatrix(bg);
@@ -283,6 +284,13 @@ if(e.getSource()==init) {
     }
    
 }
+	
+}
+
+private void checkEdges() {
+	for(int i=0;i<edges.size();i++) {
+		System.out.println("s: "+edges.get(i).getFirstPoint()+" e: "+edges.get(i).getLastPoint()+"w: "+edges.get(i).getWeight());
+	}
 	
 }
 
@@ -335,4 +343,5 @@ private void setView(boolean status) {
 	loadFile.setEnabled(!status);
 	init.setEnabled(!status);
 }
+
 }
