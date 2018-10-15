@@ -167,14 +167,6 @@ if(e.getSource()==init) {
 		this.V =v;
 		this.E=edge;
 		bg = new int [v][v];
-
-		for(int i=0;i<bg.length;i++) {
-			for(int j=0;j<bg.length;j++) {
-				if(i==j) bg[i][j]=0;
-				else bg[i][j]=Main.INFINITY;
-			}
-		}
-		
 		matrix = new JPanel(new GridLayout(v,v));
 		matrix.setBounds(120, 20, 250, 250);
 		drawMatrix(bg);
@@ -239,7 +231,6 @@ if(e.getSource()==init) {
     	    File selectFile = chooser.getSelectedFile();
 			scanner = new Scanner(selectFile);
 			int lineNumber = 0;
-			final int MAX_LINES = 10;
 			
 			while(scanner.hasNextLine()) {
 				String line = scanner.nextLine();
@@ -263,7 +254,7 @@ if(e.getSource()==init) {
 //			gán dữ liệu cho cạnh
 			for(int i=0;i<bg.length;i++) {
 				for(int j=0;j<bg.length;j++) {
-					if(bg[i][j]!=99999 &&i!=j) {
+					if(bg[i][j]!=0 && i!=j) {
 						Edge temp = new Edge(i, j, bg[i][j]);
 						edges.add(temp);
 					}
@@ -297,13 +288,16 @@ if(e.getSource()==init) {
 	    try {
 	        File f = new File(fileToSave.getAbsolutePath());
 	        FileWriter fw = new FileWriter(f);
+	        fw.write("Ma trận trọng số "+"\r\n");
 	        for(int i =0;i<bg.length;i++) {
 	        	for(int j=0;j<bg.length;j++) {
-	        		fw.write(bg[i][j]+"  ");	
+	        		fw.write(bg[i][j]+" ");	
 	        	}
 	        	fw.write("\r\n");
 	        }
-	        
+	        fw.write("Đường đi ngắn nhất từ "+this.S+" đến "+this.V+" là: ");
+	        fw.write("\r\n");
+	        fw.write(Main.result);
 	        fw.close(); 
 	      } catch (IOException ex) {
 	        System.out.println("Loi ghi file: " + ex);
@@ -339,7 +333,7 @@ private void drawMatrix(int[][] bg) {
 	for(int i=0;i<bg.length;i++) {
 		for(int j=0;j<bg.length;j++) {
 			int temp = bg[i][j];
-			if(temp==Main.INFINITY) {
+			if(temp==0 && i != j) {
 				JButton tmp = new JButton(String.valueOf("∞"));
 				tmp.setBackground(Color.PINK);
 				tmp.setMargin(new Insets(0, 0, 0, 0));
