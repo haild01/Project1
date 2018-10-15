@@ -3,6 +3,7 @@ package main;
 import java.awt.Choice;
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,7 +28,7 @@ public class DrawGraphics implements ActionListener{
 	 JFrame frame;
 	 Choice choicefirst, choicelast,from,to,choiceAlgorithm;
 	 JLabel txtResult;
-	 int bg[][]=null,S,F,V,E;
+	 int bg[][],S,F,V,E;
 	 static int INFINITY = 99999; 
 	 ArrayList<Edge> edges = new ArrayList<>();
 	 
@@ -38,6 +39,7 @@ public DrawGraphics() {
 	frame.setSize(800, 500);
 	frame.setLocation(200, 100);
 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	frame.setResizable(false);
 	//end jframe
 	JPanel right = new JPanel(null);
 	right.setBounds(500, 0, 300, 500);
@@ -192,6 +194,7 @@ if(e.getSource()==init) {
 		bg[st][en]=we;
 		drawMatrix(bg);
 		Edge temp = new Edge(st, en, we);
+		//kiểm tra cạnh đã tồn tại
 		int check =-1;
 		for(int i=0;i<edges.size();i++) {
 			if(temp.getFirstPoint()==edges.get(i).getFirstPoint()&&temp.getLastPoint()==edges.get(i).getLastPoint()) {
@@ -226,19 +229,52 @@ if(e.getSource()==init) {
 }else if(e.getSource()==loadFile) {
 	JFileChooser chooser = new JFileChooser();
     Scanner scanner =null;
+  
     if(chooser.showOpenDialog(null)==JFileChooser.APPROVE_OPTION) {
     	 try {
     	    File selectFile = chooser.getSelectedFile();
 			scanner = new Scanner(selectFile);
-			int lineNumber = 1;
+			int lineNumber = 0;
 			final int MAX_LINES = 10;
-			while(scanner.hasNextLine() && lineNumber <=MAX_LINES) {
+			
+			while(scanner.hasNextLine()) {
 				String line = scanner.nextLine();
-				System.out.println(lineNumber+ ":"+line);
 				lineNumber++;
+				if(lineNumber==1) {
+					String oneLine[] =line.split("\\s");
+					this.V = Integer.parseInt(oneLine[0]);
+					this.E = Integer.parseInt(oneLine[1]);
+					bg = new int[this.V][this.V];
+				}else {
+					if(line.length()>0) {
+						String oneLine[] =line.split("\\s");
+						for(int i=0;i<oneLine.length;i++) {
+							int tmp = Integer.parseInt(oneLine[i]);
+							bg[lineNumber-2][i]=tmp;
+						}	
+					}
+
+				}
 			}
-			if(scanner.hasNextLine()) {
-				System.out.println("....");
+//			gán dữ liệu cho cạnh
+			for(int i=0;i<bg.length;i++) {
+				for(int j=0;j<bg.length;j++) {
+					if(bg[i][j]!=99999 &&i!=j) {
+						Edge temp = new Edge(i, j, bg[i][j]);
+						edges.add(temp);
+					}
+				}
+			}
+			matrix = new JPanel(new GridLayout(this.V,this.V));
+			matrix.setBounds(120, 20, 250, 250);
+			drawMatrix(bg);
+			frame.add(matrix);
+			addItemSelect();
+			setView(true);
+			frame.setVisible(true);
+				
+			if(lineNumber==0) {
+				JOptionPane.showMessageDialog(frame, "File không hợp lệ", "Lỗi", JOptionPane.ERROR_MESSAGE);
 			}
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
@@ -270,9 +306,13 @@ private void drawMatrix(int[][] bg) {
 		for(int j=0;j<bg.length;j++) {
 			int temp = bg[i][j];
 			if(temp==Main.INFINITY) {
-				matrix.add(new JButton(String.valueOf("∞")));
+				JButton tmp = new JButton(String.valueOf("∞"));
+				tmp.setMargin(new Insets(0, 0, 0, 0));
+				matrix.add(tmp);
 			}else {
-				matrix.add(new JButton(String.valueOf(temp)));
+				JButton tmp = new JButton(String.valueOf(temp));
+				tmp.setMargin(new Insets(0, 0, 0, 0));
+				matrix.add(tmp);
 			}
 			
 		}
