@@ -26,7 +26,7 @@ import javax.swing.JTextField;
 public class DrawGraphics implements ActionListener{
 	 JButton init,addweight,gofind,reset,saveResult,loadFile;
 	 JPanel matrix ;
-	 JTextField txtVertex, txtEdge, txtweight;
+	 JTextField txtVertex, txtweight;
 	 JFrame frame;
 	 Choice choicefirst, choicelast,from,to,choiceAlgorithm;
 	 JLabel txtResult;
@@ -55,16 +55,8 @@ public DrawGraphics() {
 	txtVertex.setBounds(100, 10, 30, 20);
 	right.add(txtVertex);
 	
-	JLabel lEdge = new JLabel("Nhập số cạnh");
-	lEdge.setBounds(10, 10, 100, 100);
-	right.add(lEdge);
-	txtEdge = new JTextField(5);
-	txtEdge.setText("");
-	txtEdge.setBounds(100, 50, 30, 20);
-	right.add(txtEdge);	
-	
 	init = new JButton("Khởi tạo");
-	init.setBounds(150, 50, 120, 20);
+	init.setBounds(80, 50, 120, 20);
 	right.add(init);
 	init.addActionListener(this);
     loadFile = new JButton("Chọn từ File");
@@ -157,15 +149,13 @@ public DrawGraphics() {
 public void actionPerformed(ActionEvent e) {
 if(e.getSource()==init) {
 	String V = txtVertex.getText();
-	String E = txtEdge.getText();
-	if(V.length()==0||E.length()==0) {
-		JOptionPane.showMessageDialog(frame, "Vui lòng nhập đủ thông tin", "Lỗi", JOptionPane.ERROR_MESSAGE);
+	if(V.length()==0) {
+		JOptionPane.showMessageDialog(frame, "Vui lòng nhập số đỉnh", "Lỗi", JOptionPane.ERROR_MESSAGE);
 	}else {
 		setView(true);
 		int v = Integer.parseInt(V);
-		int edge = Integer.parseInt(E);
 		this.V =v;
-		this.E=edge;
+		this.E=0;
 		bg = new int [v][v];
 		matrix = new JPanel(new GridLayout(v,v));
 		matrix.setBounds(120, 20, 250, 250);
@@ -185,7 +175,7 @@ if(e.getSource()==init) {
 	int en = Integer.parseInt(end)-1;
 	int st = Integer.parseInt(start)-1;
 	//khởi tạo cạnh
-	if(en!=st) {
+	if(en!=st && we !=0) {
 		bg[st][en]=we;
 		drawMatrix(bg);
 		Edge temp = new Edge(st, en, we);
@@ -218,6 +208,14 @@ if(e.getSource()==init) {
 }else if(e.getSource()==reset) {
 	setView(false);
 	bg=null;
+	txtVertex.setText("");
+	choicefirst.removeAll();
+	choicelast.removeAll();
+	txtweight.setText("");
+	from.removeAll();
+	to.removeAll();
+	txtResult.setText("");
+	this.E=0;
 	edges.removeAll(edges);
 	frame.remove(matrix);
 	frame.repaint();
@@ -238,7 +236,6 @@ if(e.getSource()==init) {
 				if(lineNumber==1) {
 					String oneLine[] =line.split("\\s");
 					this.V = Integer.parseInt(oneLine[0]);
-					this.E = Integer.parseInt(oneLine[1]);
 					bg = new int[this.V][this.V];
 				}else {
 					if(line.length()>0) {
@@ -257,6 +254,7 @@ if(e.getSource()==init) {
 					if(bg[i][j]!=0 && i!=j) {
 						Edge temp = new Edge(i, j, bg[i][j]);
 						edges.add(temp);
+						this.E++;
 					}
 				}
 			}
@@ -295,7 +293,7 @@ if(e.getSource()==init) {
 	        	}
 	        	fw.write("\r\n");
 	        }
-	        fw.write("Đường đi ngắn nhất từ "+this.S+" đến "+this.V+" là: ");
+	        fw.write("Đường đi ngắn nhất từ "+(this.S+1)+" đến "+(this.F+1)+" là: ");
 	        fw.write("\r\n");
 	        fw.write(Main.result);
 	        fw.close(); 
@@ -360,7 +358,6 @@ private void setView(boolean status) {
 	from.setEnabled(status);
 	to.setEnabled(status);
 	choiceAlgorithm.setEnabled(status);
-	txtEdge.setEnabled(!status);
 	txtVertex.setEnabled(!status);
 	loadFile.setEnabled(!status);
 	init.setEnabled(!status);
