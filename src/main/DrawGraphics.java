@@ -29,9 +29,8 @@ public class DrawGraphics implements ActionListener{
 	 JTextField txtVertex, txtweight;
 	 JFrame frame;
 	 Choice choicefirst, choicelast,from,to,choiceAlgorithm;
-	 JLabel txtResult;
+	 JLabel txtResult,txtCost;
 	 int bg[][],S,F,V,E;
-	 static int INFINITY = 99999; 
 	 ArrayList<Edge> edges = new ArrayList<>();
 	 
 	 
@@ -131,13 +130,17 @@ public DrawGraphics() {
     txtResult.setBounds(10, 340, 260, 50);
     right.add(txtResult);
     
+    txtCost = new JLabel();
+    txtCost.setBounds(10, 360, 260, 50);
+    right.add(txtCost);
+    
     reset = new JButton("Reset");
-    reset.setBounds(10, 390, 100, 20);
+    reset.setBounds(10, 410, 100, 20);
     reset.addActionListener(this);
     right.add(reset);
     
     saveResult = new JButton("Lưu kết quả(.txt)");
-    saveResult.setBounds(130, 390, 140, 20);
+    saveResult.setBounds(130, 410, 140, 20);
     right.add(saveResult);
     saveResult.addActionListener(this);
     setView(false);
@@ -167,13 +170,11 @@ if(e.getSource()==init) {
 	}
 	
 }else if(e.getSource()==addweight) {
-	String start =choicefirst.getSelectedItem();
-	String end =choicelast.getSelectedItem();
+	int st =choicefirst.getSelectedIndex();
+	int en =choicelast.getSelectedIndex();
 	String weight = txtweight.getText();
-	
 	int we = Integer.parseInt(weight);
-	int en = Integer.parseInt(end)-1;
-	int st = Integer.parseInt(start)-1;
+	
 	//khởi tạo cạnh
 	if(en!=st && we !=0) {
 		bg[st][en]=we;
@@ -196,15 +197,21 @@ if(e.getSource()==init) {
 	}
 	frame.setVisible(true);
 }else if(e.getSource()==gofind) {
-	String st=from.getSelectedItem();
-	String en =to.getSelectedItem();
-	int en1 = Integer.parseInt(en)-1;
-	int st1 = Integer.parseInt(st)-1;
-	S =st1;
-	F =en1;
+	Main.cost="";
+	int start=from.getSelectedIndex() ;
+	int finish =to.getSelectedIndex() ;
+	S =start;
+	F =finish;
 	Graph graph = new Graph(V,E,edges);
-	Main.bellmanford(graph,S,F);
+	int Algorithm =choiceAlgorithm.getSelectedIndex() ;
+	Main main = new Main();
+	if(Algorithm==0) {
+		main.bellmanford(graph,S,F);
+	}else if(Algorithm==1) {
+		main.dijkstra(bg,S,F);
+	}
 	txtResult.setText(Main.result);
+	txtCost.setText(Main.cost);
 }else if(e.getSource()==reset) {
 	setView(false);
 	bg=null;
@@ -215,6 +222,8 @@ if(e.getSource()==init) {
 	from.removeAll();
 	to.removeAll();
 	txtResult.setText("");
+	txtCost.setText("");
+	Main.cost="";
 	this.E=0;
 	edges.removeAll(edges);
 	frame.remove(matrix);
@@ -304,6 +313,7 @@ if(e.getSource()==init) {
 	
 }
 }
+
 
 private void checkEdges() {
 	for(int i=0;i<edges.size();i++) {

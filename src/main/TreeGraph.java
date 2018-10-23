@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import javax.swing.JPanel;
 import javax.swing.text.Style;
 
+@SuppressWarnings({ "serial", "unused" })
 public class TreeGraph extends JPanel {
 	public TreeGraph() {
 
