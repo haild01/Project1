@@ -69,7 +69,6 @@ public  void dijkstra(int[][] graph, int source, int finish){
              }
                  
      }
-     view(p);
 	timduong(p, source, finish,dist);
 }
 int minDistance(int dist[], Boolean visit[]) {  // tìm đỉnh gần nhất 
@@ -82,9 +81,17 @@ int minDistance(int dist[], Boolean visit[]) {  // tìm đỉnh gần nhất
     return min_index; 
 }
 
-private void view(int[] graph) {
+private void view2D(int[] graph) {
 	for(int i=0;i<graph.length;i++) {
 		System.out.print(graph[i]+" ");
+	}
+}
+private void view3D(int[][] graph) {
+	for(int i=0;i<graph.length;i++) {
+		for(int j=0;j<graph.length;j++) {
+			System.out.print(graph[i][j]+" ");
+		}
+		System.out.println();
 	}
 }
 
@@ -114,4 +121,83 @@ private void timduong(int[] p,int source, int finish,int []d) {
 		cost="Chi phí là: "+d[finish];
 	}
 }
+// Floyd
+public  void Floyd(int[][]bg,int start,int finish) {
+	int a[][] = new int[bg.length][bg.length];
+	for(int i=0;i<bg.length;i++) {
+		for(int j =0;j<bg.length;j++) {
+			if(i != j && bg[i][j]==0) {
+				a[i][j]=INFINITY;
+			}else {
+				a[i][j]=bg[i][j];
+			}
+		}
+	}
+	
+	int p[][] = new int[a.length][a.length];
+	for(int i =0;i<a.length;i++) {
+		for(int j =0;j<a.length;j++) {
+		 p[i][j]=-1;
+		}
+	}
+	for(int k= 0;k<a.length;k++) {
+		for(int i =0;i<a.length;i++) {
+			for(int j =0;j<a.length;j++) {
+				if(a[i][k]+a[k][j] < a[i][j]) {
+					a[i][j]=a[i][k] + a[k][j];
+					p[i][j]=k;
+				}
+			}
+		}
+	}
+
+  findRoad(start,finish,p,a);
+}
+
+private static void findRoad(int start, int finish,int[][]p,int[][]cost) {
+	Main.result="";
+	if(cost[start][finish]==INFINITY) {
+		result="Không tồn tại đường đi từ "+(start+1)+" đến "+(finish+1);
+	}else {
+		ArrayList list = new ArrayList<>();
+		list.add(start);
+		list.add(finish);
+
+		int k =p[start][finish];
+		while(k!=-1 ) {
+			list.add(1, k);
+			int tmp = (int)list.get(0);
+			k = p[tmp][k];
+		}
+	
+		for(int m =0;m<p.length;m++) {
+			for(int i=list.size()-1;i>0;i--) {
+				int t1=(int)list.get(i);
+				int t2=(int)list.get(i-1);
+				    k =p[t2][t1];
+				   while(k!=-1) {
+						list.add(i, k);
+						int t=(int)list.get(i);
+						k = p[k][t]; 
+				   }
+				}
+		}
+		int COST=cost[start][finish];
+		Main.cost="Chi phí là: "+COST;
+		for(int i=0;i<list.size();i++) {
+			int tmp =(int)list.get(i) +1;
+			if(i!=list.size()-1) {
+				Main.result+=tmp+" → ";
+			}else {
+				Main.result+=tmp;
+			}
+			
+		}
+			
+	}
+	
+	
+}
+
+
 }

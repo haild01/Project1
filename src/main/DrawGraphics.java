@@ -115,6 +115,7 @@ public DrawGraphics() {
 	choiceAlgorithm.setBounds(120, 240, 130, 22);
 	choiceAlgorithm.addItem("Bellman-Ford");
 	choiceAlgorithm.addItem("Dijkstra");
+	choiceAlgorithm.addItem("Floyd-Warshall");
 	right.add(choiceAlgorithm);
 	
 	gofind = new JButton("Tìm đường");
@@ -209,6 +210,8 @@ if(e.getSource()==init) {
 		main.bellmanford(graph,S,F);
 	}else if(Algorithm==1) {
 		main.dijkstra(bg,S,F);
+	}else if(Algorithm==2) {
+		main.Floyd(bg, S, F);
 	}
 	txtResult.setText(Main.result);
 	txtCost.setText(Main.cost);
