@@ -29,7 +29,7 @@ public class DrawGraphics implements ActionListener{
 	 JTextField txtVertex, txtweight;
 	 JFrame frame;
 	 Choice choicefirst, choicelast,from,to,choiceAlgorithm;
-	 JLabel txtResult,txtCost;
+	 JLabel txtResult,txtCost,txtNumberRoad,labelResult;
 	 int bg[][],S,F,V,E;
 	 ArrayList<Edge> edges = new ArrayList<>();
 	 
@@ -37,13 +37,13 @@ public class DrawGraphics implements ActionListener{
 public DrawGraphics() {
 	frame = new JFrame();
 	frame.setLayout(null);
-	frame.setSize(800, 500);
-	frame.setLocation(200, 100);
+	frame.setSize(900, 600);
+	frame.setLocation(200, 50);
 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	frame.setResizable(false);
 	//end jframe
 	JPanel right = new JPanel(null);
-	right.setBounds(500, 0, 300, 500);
+	right.setBounds(600, 0, 300, 600);
 	right.setBackground(Color.CYAN);
 	
 	JLabel lVertex = new JLabel("Nhập số đỉnh");
@@ -96,15 +96,15 @@ public DrawGraphics() {
 	right.add(txtfindRoad);
 	
 	from = new Choice();
-	from.setBounds(125, 184, 40, 22);
+	from.setBounds(125, 184, 60, 22);
 	right.add(from);
 	
 	JLabel txtfrom = new JLabel("đến");
-	txtfrom.setBounds(170, 184, 30, 22);
+	txtfrom.setBounds(190, 184, 30, 22);
 	right.add(txtfrom);
 	
     to = new Choice();
-	to.setBounds(200, 184, 40, 22);
+	to.setBounds(220, 184, 60, 22);
 	right.add(to);
 	
 	JLabel labelAlgorithm = new JLabel("Chọn thuật toán");
@@ -112,36 +112,45 @@ public DrawGraphics() {
 	right.add(labelAlgorithm);
 	
     choiceAlgorithm = new Choice();
-	choiceAlgorithm.setBounds(120, 240, 130, 22);
+	choiceAlgorithm.setBounds(120, 240, 150, 22);
 	choiceAlgorithm.addItem("Bellman-Ford");
 	choiceAlgorithm.addItem("Dijkstra");
 	choiceAlgorithm.addItem("Floyd-Warshall");
+	choiceAlgorithm.addItem("Tìm k đường đi ngắn nhất");
 	right.add(choiceAlgorithm);
 	
 	gofind = new JButton("Tìm đường");
-	gofind.setBounds(80, 290, 130, 22);
+	gofind.setBounds(145, 275, 100, 22);
 	right.add(gofind);
 	gofind.addActionListener(this);
     
-    JLabel labelResult = new JLabel("Đường đi ngắn nhất là: ");
-    labelResult.setBounds(10, 320, 260, 50);
+	txtCost = new JLabel();
+    txtCost.setBounds(10, 340, 260, 50);
+    right.add(txtCost);
+	
+    JLabel kq = new JLabel("KẾT QUẢ");
+    kq.setBounds(120, 300, 260, 50);
+    right.add(kq);
+    
+    txtNumberRoad = new JLabel("");
+    txtNumberRoad.setBounds(10, 320, 260, 50);
+    right.add(txtNumberRoad);
+    
+    labelResult = new JLabel("");
+    labelResult.setBounds(10, 360, 260, 50);
 	right.add(labelResult);
 	
 	txtResult = new JLabel("");
-    txtResult.setBounds(10, 340, 260, 50);
+    txtResult.setBounds(10, 372, 300, 150);
     right.add(txtResult);
     
-    txtCost = new JLabel();
-    txtCost.setBounds(10, 360, 260, 50);
-    right.add(txtCost);
-    
     reset = new JButton("Reset");
-    reset.setBounds(10, 410, 100, 20);
+    reset.setBounds(10, 530, 100, 20);
     reset.addActionListener(this);
     right.add(reset);
     
     saveResult = new JButton("Lưu kết quả(.txt)");
-    saveResult.setBounds(130, 410, 140, 20);
+    saveResult.setBounds(130, 530, 140, 20);
     right.add(saveResult);
     saveResult.addActionListener(this);
     setView(false);
@@ -199,6 +208,8 @@ if(e.getSource()==init) {
 	frame.setVisible(true);
 }else if(e.getSource()==gofind) {
 	Main.cost="";
+	Main.txtNumberRoad="";
+	labelResult.setText("Đường đi ngắn nhất là: ");
 	int start=from.getSelectedIndex() ;
 	int finish =to.getSelectedIndex() ;
 	S =start;
@@ -212,12 +223,16 @@ if(e.getSource()==init) {
 		main.dijkstra(bg,S,F);
 	}else if(Algorithm==2) {
 		main.Floyd(bg, S, F);
+	}else if(Algorithm==3) {
+		main.findAllShortestPath(graph,S,F);
 	}
 	txtResult.setText(Main.result);
 	txtCost.setText(Main.cost);
+	txtNumberRoad.setText(Main.txtNumberRoad);
 }else if(e.getSource()==reset) {
 	setView(false);
 	bg=null;
+	txtNumberRoad.setText("");
 	txtVertex.setText("");
 	choicefirst.removeAll();
 	choicelast.removeAll();
@@ -226,6 +241,7 @@ if(e.getSource()==init) {
 	to.removeAll();
 	txtResult.setText("");
 	txtCost.setText("");
+	labelResult.setText("");
 	Main.cost="";
 	this.E=0;
 	edges.removeAll(edges);
