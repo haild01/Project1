@@ -1,9 +1,13 @@
 package main;
 
+import java.awt.BorderLayout;
+import java.awt.Button;
 import java.awt.Choice;
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.Paint;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,6 +18,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -24,28 +30,42 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 public class DrawGraphics implements ActionListener{
-	 JButton init,addweight,gofind,reset,saveResult,loadFile;
-	 JPanel matrix ;
+	 JButton init,addweight,gofind,reset,saveResult,loadFile,btnConvert;
+	 JPanel matrix, graph;
 	 JTextField txtVertex, txtweight;
 	 JFrame frame;
 	 Choice choicefirst, choicelast,from,to,choiceAlgorithm;
 	 JLabel txtResult,txtCost,txtNumberRoad,labelResult;
-	 int bg[][],S,F,V,E;
+	 static int bg[][];
+	 int S,F,V,E;
 	 ArrayList<Edge> edges = new ArrayList<>();
-	 
+	 GraphDraw graphDraw;
+	 JPanel right;
 	 
 public DrawGraphics() {
+	//khởi tạo JFrame
 	frame = new JFrame();
 	frame.setLayout(null);
-	frame.setSize(900, 600);
-	frame.setLocation(200, 50);
+	frame.setSize(1000, 600);
+	frame.setLocation(200, 30);
 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	frame.setResizable(false);
-	//end jframe
-	JPanel right = new JPanel(null);
-	right.setBounds(600, 0, 300, 600);
+	
+	// khởi tạo JPanel chọn thuật toán
+	right = new JPanel(null);
+	right.setBounds(700, 0, 300, 600);
 	right.setBackground(Color.CYAN);
 	
+	// ma trận trọng số <=> đồ thị
+	JPanel down = new JPanel();
+	down.setBackground(Color.WHITE);
+	down.setBounds(0, 550, 700, 20);
+	btnConvert = new JButton("Chuyển đổi");
+	btnConvert.setBounds(300, 550, 100, 20);
+	frame.add(btnConvert);
+	frame.add(down);
+	btnConvert.addActionListener(this);
+	//tạo số đỉnh
 	JLabel lVertex = new JLabel("Nhập số đỉnh");
 	lVertex.setBounds(10, -30, 100, 100);
 	right.add(lVertex);
@@ -53,16 +73,18 @@ public DrawGraphics() {
     txtVertex.setText("");
 	txtVertex.setBounds(100, 10, 30, 20);
 	right.add(txtVertex);
-	
 	init = new JButton("Khởi tạo");
 	init.setBounds(80, 50, 120, 20);
 	right.add(init);
 	init.addActionListener(this);
+	
+	//chọn từ file
     loadFile = new JButton("Chọn từ File");
 	loadFile.setBounds(150, 10, 120, 20);
 	loadFile.addActionListener(this);
 	right.add(loadFile);
 	
+	//thêm trọng số cho cạnh
 	JLabel firstPoint = new JLabel("Đỉnh đầu");
 	firstPoint.setBounds(10, 80, 100, 20);
 	right.add(firstPoint);
@@ -70,7 +92,6 @@ public DrawGraphics() {
 	JLabel lastPoint = new JLabel("Đỉnh cuối");
 	lastPoint.setBounds(90, 80, 100, 20);
 	right.add(lastPoint);
-	
     choicefirst = new Choice();
 	choicefirst.setBounds(10, 110, 50, 0);
 	right.add(choicefirst);
@@ -91,6 +112,7 @@ public DrawGraphics() {
 	right.add(addweight);
 	addweight.addActionListener(this);
 	
+	//chọn đường đi
 	JLabel txtfindRoad = new JLabel("Tìm đường đi:  Từ");
 	txtfindRoad.setBounds(10, 185, 115, 20);
 	right.add(txtfindRoad);
@@ -107,6 +129,7 @@ public DrawGraphics() {
 	to.setBounds(220, 184, 60, 22);
 	right.add(to);
 	
+	//chọn thuật toán
 	JLabel labelAlgorithm = new JLabel("Chọn thuật toán");
 	labelAlgorithm.setBounds(10, 240, 100, 22);
 	right.add(labelAlgorithm);
@@ -128,6 +151,7 @@ public DrawGraphics() {
     txtCost.setBounds(10, 340, 260, 50);
     right.add(txtCost);
 	
+    //view hiển thị  kq
     JLabel kq = new JLabel("KẾT QUẢ");
     kq.setBounds(120, 300, 260, 50);
     right.add(kq);
@@ -144,11 +168,13 @@ public DrawGraphics() {
     txtResult.setBounds(10, 372, 300, 150);
     right.add(txtResult);
     
+    // tạo lại đồ thị
     reset = new JButton("Reset");
     reset.setBounds(10, 530, 100, 20);
     reset.addActionListener(this);
     right.add(reset);
     
+    //lưu kết quả vào file
     saveResult = new JButton("Lưu kết quả(.txt)");
     saveResult.setBounds(130, 530, 140, 20);
     right.add(saveResult);
@@ -160,53 +186,51 @@ public DrawGraphics() {
 
 @Override
 public void actionPerformed(ActionEvent e) {
-if(e.getSource()==init) {
+if(e.getSource()==init) { //khởi tạo số đỉnh
 	String V = txtVertex.getText();
 	if(V.length()==0) {
 		JOptionPane.showMessageDialog(frame, "Vui lòng nhập số đỉnh", "Lỗi", JOptionPane.ERROR_MESSAGE);
 	}else {
-		setView(true);
-		int v = Integer.parseInt(V);
-		this.V =v;
-		this.E=0;
-		bg = new int [v][v];
-		matrix = new JPanel(new GridLayout(v,v));
-		matrix.setBounds(120, 20, 250, 250);
-		drawMatrix(bg);
-		frame.add(matrix);
-		addItemSelect();
 		
-		frame.setVisible(true);
+		this.V =Integer.parseInt(V); // lấy số đỉnh của đồ thị
+		if(this.V<=10) {
+			setView(true);
+			this.E=0; // số cạnh
+			bg = new int [this.V][this.V];
+			graphDraw = new GraphDraw();
+			frame.add(graphDraw);
+			addItemSelect(); 
+			frame.setVisible(true);	
+		}else {
+			JOptionPane.showMessageDialog(frame, "Giới hạn đỉnh là 10", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		}
+		
 	}
 	
-}else if(e.getSource()==addweight) {
+}else if(e.getSource()==addweight) { // thêm trọng số cho cạnh
 	int st =choicefirst.getSelectedIndex();
 	int en =choicelast.getSelectedIndex();
 	String weight = txtweight.getText();
-	int we = Integer.parseInt(weight);
-	
-	//khởi tạo cạnh
-	if(en!=st && we !=0) {
-		bg[st][en]=we;
-		drawMatrix(bg);
-		Edge temp = new Edge(st, en, we);
-		//kiểm tra cạnh đã tồn tại
-		int check =-1;
-		for(int i=0;i<edges.size();i++) {
-			if(temp.getFirstPoint()==edges.get(i).getFirstPoint()&&temp.getLastPoint()==edges.get(i).getLastPoint()) {
-				check=i;
-				break;
-			}
+	if(weight.length()==0) {
+		JOptionPane.showMessageDialog(frame, "Vui lòng nhập trọng số", "Lỗi", JOptionPane.ERROR_MESSAGE);
+	}else {
+		//khởi tạo cạnh
+		int we = Integer.parseInt(weight);
+		if(en!=st && we !=0) {
+			bg[st][en]=we;
+			Edge temp = new Edge(st, en, we);
+			if(checkEdges(temp,edges)==-1) {	//kiểm tra cạnh đã tồn tại
+				edges.add(temp);
+				this.E++;
+			}else {
+				edges.set(checkEdges(temp,edges),temp);
+			}	
 		}
-		if(check==-1) {
-			edges.add(temp);
-			this.E++;
-		}else {
-			edges.set(check,temp);
-		}	
+		graphDraw.repaint();
+		frame.setVisible(true);
 	}
-	frame.setVisible(true);
-}else if(e.getSource()==gofind) {
+
+}else if(e.getSource()==gofind) { // chọn thuật toán 
 	Main.cost="";
 	Main.txtNumberRoad="";
 	labelResult.setText("Đường đi ngắn nhất là: ");
@@ -229,8 +253,12 @@ if(e.getSource()==init) {
 	txtResult.setText(Main.result);
 	txtCost.setText(Main.cost);
 	txtNumberRoad.setText(Main.txtNumberRoad);
-}else if(e.getSource()==reset) {
+	graphDraw.repaint();
+	frame.setVisible(true);
+}else if(e.getSource()==reset) { // reset đồ thị
 	setView(false);
+	Main.path=null;
+	Main.Kpath=null;
 	bg=null;
 	txtNumberRoad.setText("");
 	txtVertex.setText("");
@@ -245,14 +273,15 @@ if(e.getSource()==init) {
 	Main.cost="";
 	this.E=0;
 	edges.removeAll(edges);
-	frame.remove(matrix);
+	if(matrix!=null) frame.remove(matrix);
+	if(graphDraw!=null) frame.remove(graphDraw);
 	frame.repaint();
 	
-}else if(e.getSource()==loadFile) {
+}else if(e.getSource()==loadFile) { // đọc dữ liệu từ file
 	JFileChooser chooser = new JFileChooser();
     Scanner scanner =null;
   
-    if(chooser.showOpenDialog(null)==JFileChooser.APPROVE_OPTION) {
+    if(chooser.showOpenDialog(null)==JFileChooser.APPROVE_OPTION) { // chọn file thành công
     	 try {
     	    File selectFile = chooser.getSelectedFile();
 			scanner = new Scanner(selectFile);
@@ -287,11 +316,9 @@ if(e.getSource()==init) {
 				}
 			}
 			
-			matrix = new JPanel(new GridLayout(this.V,this.V));
-			matrix.setBounds(120, 20, 250, 250);
-			drawMatrix(bg);
-			frame.add(matrix);
-			addItemSelect();
+			graphDraw = new GraphDraw();
+			frame.add(graphDraw);
+			addItemSelect(); 
 			setView(true);
 			frame.setVisible(true);
 				
@@ -304,7 +331,7 @@ if(e.getSource()==init) {
     	 
     }
    
-}else if(e.getSource()==saveResult) {
+}else if(e.getSource()==saveResult) { // lưu kết quả vào file
 	JFileChooser fileChooser = new JFileChooser();	
 	fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
 	int userSelection = fileChooser.showSaveDialog(frame);
@@ -330,17 +357,37 @@ if(e.getSource()==init) {
 	    }
 }
 	
-}
-}
-
-
-private void checkEdges() {
-	for(int i=0;i<edges.size();i++) {
-		System.out.println("s: "+edges.get(i).getFirstPoint()+" e: "+edges.get(i).getLastPoint()+"w: "+edges.get(i).getWeight());
+}else if(e.getSource()==btnConvert) {
+	if(graphDraw ==null) {
+		frame.remove(matrix);
+		matrix=null;
+		graphDraw = new GraphDraw();
+		frame.add(graphDraw);	
+	}else {
+		frame.remove(graphDraw);
+		graphDraw=null;
+		matrix = new JPanel(new GridLayout(this.V,this.V));
+		matrix.setBounds(270, 170, 250, 250);
+		drawMatrix(bg); // vẽ ma trận trọng số
+		frame.add(matrix); // add vào frame
 	}
-	
+	frame.setVisible(true);
+	frame.repaint();
+}
 }
 
+private int checkEdges(Edge temp, ArrayList<Edge> edges2) {
+	int check =-1;
+	for(int i=0;i<edges.size();i++) {
+		if(temp.getFirstPoint()==edges.get(i).getFirstPoint()&&temp.getLastPoint()==edges.get(i).getLastPoint()) {
+			check=i;
+			return check;
+		}
+	}
+	return check;
+}
+
+// thêm item vào choice
 private void addItemSelect() {
 	choicefirst.removeAll();
 	choicelast.removeAll();
@@ -354,7 +401,7 @@ private void addItemSelect() {
 	}
 	
 }
-
+// vẽ ma trận trọng số
 private void drawMatrix(int[][] bg) {
 	matrix.removeAll();
 	for(int i=0;i<bg.length;i++) {
@@ -376,8 +423,10 @@ private void drawMatrix(int[][] bg) {
 	}
 	
 }
+// hiển thị button chọn
 private void setView(boolean status) {
 	addweight.setEnabled(status);
+	btnConvert.setEnabled(status);
 	gofind.setEnabled(status);
 	reset.setEnabled(status);
 	saveResult.setEnabled(status);

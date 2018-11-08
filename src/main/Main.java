@@ -4,12 +4,27 @@ import java.util.ArrayList;
 public class Main{
 	static int INFINITY = 99999; 
 	static String result="",cost="",txtNumberRoad="";
+	static ArrayList<Vertex> vertexs = new ArrayList<>(); // chứa các đỉnh của đồ thị
+	static ArrayList path =null;// chứa các đỉnh kết quả
+	static ArrayList Kpath =null; //chứa k đường đi 
 public static void main(String []agrs) {
+	vertexs.add(new Vertex(60, 239, "1"));
+	vertexs.add(new Vertex(268, 252, "2"));
+	vertexs.add(new Vertex(339, 59, "3"));
+	vertexs.add(new Vertex(550, 127, "4"));
+	vertexs.add(new Vertex(360, 417, "5"));
+	vertexs.add(new Vertex(121, 125, "6"));
+	vertexs.add(new Vertex(493, 340, "7"));
+	vertexs.add(new Vertex(140, 405, "8"));
+	vertexs.add(new Vertex(643, 204, "9"));
+	vertexs.add(new Vertex(550, 37, "10"));
 	new DrawGraphics();
 }
 
 //bellman ford algorithm
-public void bellmanford(Graph g, int source,int finish) {	
+public void bellmanford(Graph g, int source,int finish) {
+	if(path!=null) path.clear();
+	if(Kpath!=null) Kpath.clear();
 	int i, j, u, v, w;
 	int tV = g.getV(); //tổng số đỉnh của đồ thị
 	int tE = g.getE(); //tổng số cạnh
@@ -49,31 +64,73 @@ public void bellmanford(Graph g, int source,int finish) {
 	displayPath(p,source,finish,d);
 	
 }
-
+private void displayPath(int[] p,int source, int finish,int []d) {
+	result="";
+	int i =finish;
+	ArrayList<Object> roadlist = new ArrayList<>();
+	roadlist.add(finish);
+	int check = 0;
+	while(p[i] !=source && check < p.length+10) { // kiểm tra có tồn tại đường đi
+		i=p[i];
+		roadlist.add(i);
+		check++;
+	}
+	roadlist.add(source);
+	if(source==finish) {
+		result="Điểm đầu trùng điểm cuối";
+	}else if(check>p.length || d[finish]==INFINITY) {
+		result="Không tồn tại đường đi từ "+(source+1)+" đến "+(finish+1);
+	}else {
+		path = new ArrayList<>();// chứa các đỉnh kết quả
+		path.clear();
+		for(int j=roadlist.size()-1;j>0;j--) {
+			int temp = (int) roadlist.get(j)+1;
+			path.add(temp-1);
+			String kq =temp+" → ";
+			result+=kq;
+		}
+		path.add(finish);
+		result+=(finish+1)+"";	
+		cost="Chi phí là: "+d[finish];
+	}
+}
 //dijkstra algorithm
 public  void dijkstra(int[][] graph, int source, int finish){
-	 int dist[] = new int[graph.length];  // chi phí 
-     int p[] = new int[graph.length];	  // đường đi
-     Boolean visit[] = new Boolean[graph.length]; 
-     for (int i = 0; i < graph.length; i++) { 
-         dist[i] = INFINITY; 
-         visit[i] = false; 
-     } 
-     dist[source] = 0; 
-     for (int i = 0; i < graph.length; i++) { 
-         int u = minDistance(dist, visit); 
-         visit[u] = true; // đánh dấu đỉnh đã thăm
-         for (int v = 0; v < graph.length; v++) {
-        	 // chưa thăm && có cạnh nối && có gốc && k/c u,v + trọng số < k/c đến v
-        	 if (!visit[v] && graph[u][v]!=0 && dist[u] != INFINITY && dist[u]+graph[u][v] < dist[v]) {
-              	dist[v] = dist[u] + graph[u][v]; 
-              	p[v]= u;
-              } 
-         }
-                    
-     }
+	if(path!=null) path.clear();
+	if(Kpath!=null) Kpath.clear();
+	int check =0; // kiểm tra trọng số âm
+	for(int i =0;i<graph.length;i++) {
+		for(int j=0;j<graph.length;j++) {
+			if(graph[i][j] <0) check++;
+		}
+	}
+	if(check >0) {
+	result ="Đồ thị chứa trọng số âm";
+	}else {
+		 int dist[] = new int[graph.length];  // chi phí 
+	     int p[] = new int[graph.length];	  // đường đi
+	     Boolean visit[] = new Boolean[graph.length]; 
+	     for (int i = 0; i < graph.length; i++) { 
+	         dist[i] = INFINITY; 
+	         visit[i] = false; 
+	     } 
+	     dist[source] = 0; 
+	     for (int i = 0; i < graph.length; i++) { 
+	         int u = minDistance(dist, visit); 
+	         visit[u] = true; // đánh dấu đỉnh đã thăm
+	         for (int v = 0; v < graph.length; v++) {
+	        	 // chưa thăm && có cạnh nối && có gốc && k/c u,v + trọng số < k/c đến v
+	        	 if (!visit[v] && graph[u][v]!=0 && dist[u] != INFINITY && dist[u]+graph[u][v] < dist[v]) {
+	              	dist[v] = dist[u] + graph[u][v]; 
+	              	p[v]= u;
+	              } 
+	         }
+	                    
+	     }
 
-displayPath(p, source, finish,dist); // hiển thị chi tiết đường đi
+	displayPath(p, source, finish,dist); // hiển thị chi tiết đường đi	
+	}
+	
 }
 int minDistance(int dist[], Boolean visit[]) {  // tìm đỉnh gần nhất 
     int min = INFINITY, min_index=-1;
@@ -99,34 +156,11 @@ private void view3D(int[][] graph) {
 	}
 }
 
-private void displayPath(int[] p,int source, int finish,int []d) {
-	result="";
-	int i =finish;
-	ArrayList<Object> roadlist = new ArrayList<>();
-	roadlist.add(finish);
-	int check = 0;
-	while(p[i] !=source && check < p.length+10) { // kiểm tra có tồn tại đường đi
-		i=p[i];
-		roadlist.add(i);
-		check++;
-	}
-	roadlist.add(source);
-	if(source==finish) {
-		result="Điểm đầu trùng điểm cuối";
-	}else if(check>p.length || d[finish]==INFINITY) {
-		result="Không tồn tại đường đi từ "+(source+1)+" đến "+(finish+1);
-	}else {
-		for(int j=roadlist.size()-1;j>0;j--) {
-			int temp = (int) roadlist.get(j)+1;
-			String kq =temp+" → ";
-			result+=kq;
-		}
-		result+=(finish+1)+"";	
-		cost="Chi phí là: "+d[finish];
-	}
-}
+
 // Floyd
 public  void Floyd(int[][]bg,int start,int finish) {
+	if(path!=null) path.clear();
+	if(Kpath!=null) Kpath.clear();
 	int a[][] = new int[bg.length][bg.length];
 	for(int i=0;i<bg.length;i++) {  // Bước 1
 		for(int j =0;j<bg.length;j++) {
@@ -185,9 +219,12 @@ private static void displayPathFloyd(int start, int finish,int[][]p,int[][]cost)
 				   }
 				}
 		}
+		path = new ArrayList<>();// chứa các đỉnh kết quả
+		path.clear();
 		Main.cost="Chi phí là: "+cost[start][finish];
 		for(int i=0;i<list.size();i++) {
 			int tmp =(int)list.get(i) +1;
+			path.add(tmp-1);
 			if(i!=list.size()-1) {
 				Main.result+=tmp+" → ";
 			}else {
@@ -201,6 +238,8 @@ private static void displayPathFloyd(int start, int finish,int[][]p,int[][]cost)
 
 // tìm k đường đi ngắn nhất giữa 2 đỉnh
   public void findAllShortestPath(Graph g, int source,int finish) {
+	  if(path!=null) path.clear();
+	  if(Kpath!=null) Kpath.clear();
 	  result="";
 	  int i, j, u, v, w;
 		int tV = g.getV(); //tổng số đỉnh của đồ thị
@@ -261,7 +300,7 @@ private static void displayPathFloyd(int start, int finish,int[][]p,int[][]cost)
 				list.remove(t);
 			}
 		}
-		String s = displayKPath(source,finish,d,p,list);
+		String s = displayKPath(source,finish,d,p,list); // Hiển thị chi tiết k đường đi
 		result=s;
 	
 		
@@ -352,6 +391,9 @@ private String displayKPath(int source, int finish, int[] d, int[] p, ArrayList<
 				}
 			}
 		}
+		Kpath = new ArrayList<>();
+		Kpath.clear();
+		Kpath = roads;
 		String totalRoads ="<html>";
 		for(int k =0;k<roads.size();k++) {
 			ArrayList tmp = (ArrayList) roads.get(k);
@@ -367,8 +409,6 @@ private String displayKPath(int source, int finish, int[] d, int[] p, ArrayList<
 				
 			}
 			totalRoads+=s;
-			
-			
 		}
 		totalRoads+="</html>";
 		txtNumberRoad = "Tồn tại "+roads.size()+" đường đi ngắn nhất";
