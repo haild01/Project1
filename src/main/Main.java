@@ -7,6 +7,7 @@ public class Main{
 	static ArrayList<Vertex> vertexs = new ArrayList<>(); // chứa các đỉnh của đồ thị
 	static ArrayList path =null;// chứa các đỉnh kết quả
 	static ArrayList Kpath =null; //chứa k đường đi 
+	static int[] parent =null; // chứa các đỉnh cha của cây khung nhỏ nhất
 public static void main(String []agrs) {
 	vertexs.add(new Vertex(60, 239, "1"));
 	vertexs.add(new Vertex(268, 252, "2"));
@@ -23,8 +24,7 @@ public static void main(String []agrs) {
 
 //bellman ford algorithm
 public void bellmanford(Graph g, int source,int finish) {
-	if(path!=null) path.clear();
-	if(Kpath!=null) Kpath.clear();
+	clear(); // xóa kết quả cũ
 	int i, j, u, v, w;
 	int tV = g.getV(); //tổng số đỉnh của đồ thị
 	int tE = g.getE(); //tổng số cạnh
@@ -65,7 +65,6 @@ public void bellmanford(Graph g, int source,int finish) {
 	
 }
 private void displayPath(int[] p,int source, int finish,int []d) {
-	result="";
 	int i =finish;
 	ArrayList<Object> roadlist = new ArrayList<>();
 	roadlist.add(finish);
@@ -96,8 +95,7 @@ private void displayPath(int[] p,int source, int finish,int []d) {
 }
 //dijkstra algorithm
 public  void dijkstra(int[][] graph, int source, int finish){
-	if(path!=null) path.clear();
-	if(Kpath!=null) Kpath.clear();
+	clear();
 	int check =0; // kiểm tra trọng số âm
 	for(int i =0;i<graph.length;i++) {
 		for(int j=0;j<graph.length;j++) {
@@ -159,8 +157,7 @@ private void view3D(int[][] graph) {
 
 // Floyd
 public  void Floyd(int[][]bg,int start,int finish) {
-	if(path!=null) path.clear();
-	if(Kpath!=null) Kpath.clear();
+	clear();
 	int a[][] = new int[bg.length][bg.length];
 	for(int i=0;i<bg.length;i++) {  // Bước 1
 		for(int j =0;j<bg.length;j++) {
@@ -192,9 +189,10 @@ public  void Floyd(int[][]bg,int start,int finish) {
 }
 
 private static void displayPathFloyd(int start, int finish,int[][]p,int[][]cost) {
-	Main.result="";
 	if(cost[start][finish]==INFINITY) {
 		result="Không tồn tại đường đi từ "+(start+1)+" đến "+(finish+1);
+	}else if(start==finish) {
+	result="Điểm đầu trùng điểm cuối";	
 	}else {
 		ArrayList list = new ArrayList<>();
 		list.add(start);
@@ -238,9 +236,7 @@ private static void displayPathFloyd(int start, int finish,int[][]p,int[][]cost)
 
 // tìm k đường đi ngắn nhất giữa 2 đỉnh
   public void findAllShortestPath(Graph g, int source,int finish) {
-	  if(path!=null) path.clear();
-	  if(Kpath!=null) Kpath.clear();
-	  result="";
+	  clear();
 	  int i, j, u, v, w;
 		int tV = g.getV(); //tổng số đỉnh của đồ thị
 		int tE = g.getE(); //tổng số cạnh
@@ -467,6 +463,64 @@ private static int getIndex(ArrayList<Node> list, int key) {
 		return false;
 	}
   
+  // Bài toán cây khung nhỏ nhất
+  
+  //thuật toán Prim
+  public static void prim(int graph[][]) { 
+	  	clear();
+       parent = new int[graph.length];  // lưu đỉnh cha của v
+      int key[] = new int [graph.length];  // lưu chi phí 
+
+ 
+      Boolean mstSet[] = new Boolean[graph.length];      // lưu các đỉnh đã chọn
+
+      // Khởi tạo
+      for (int i = 0; i < graph.length; i++) { 
+          key[i] = Integer.MAX_VALUE; 
+          mstSet[i] = false; 
+      } 
+      
+      key[0] = 0;   // chi phí tới chính nó là 0   
+      parent[0] = -1; // đỉnh trước 0 là -1 (k tồn tại)
+      
+      for (int i = 0; i < graph.length-1; i++)  { 
+          int u = minKey(key, mstSet);  // lấy ra đỉnh có cạnh nhẹ nhất
+          mstSet[u] = true; // đánh dấu đỉnh đã chọn
+          for (int v = 0; v < graph.length; v++) {
+              if (graph[u][v]!=0 && mstSet[v] == false && graph[u][v] < key[v]) { 
+                  parent[v] = u; 
+                  key[v] = graph[u][v]; 
+              } 	
+          }
+      } 
+    int sumCost =0;
+    for(int i =0;i<key.length;i++)
+    	sumCost+=key[i];
+    cost="Độ dài của cây khung là: "+sumCost;
+    for(int i =1;i<parent.length;i++) {
+    	result+="("+(parent[i]+1)+","+(i+1)+")  ";
+    }
+  }
+
+private static void clear() {
+	if(path!=null) path.clear();
+	if(Kpath!=null) Kpath.clear();
+	if(parent!=null) parent=null;
+	result="";
+	txtNumberRoad="";
+}
+
+private static int minKey(int[] key, Boolean[] mstSet) {
+    // khởi tạo giá trị
+    int min = Integer.MAX_VALUE, min_index=-1; 
+    for (int v = 0; v < key.length; v++) {
+    	   if (mstSet[v] == false && key[v] < min) {  // đỉnh chưa chọn && < min 
+               min = key[v]; 
+               min_index = v; 
+           } 
+    }
+    return min_index; 
+} 
 
 
 }

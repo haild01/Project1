@@ -26,13 +26,13 @@ public class GraphDraw extends JPanel {
 		f2 = new Font("Calibri", Font.BOLD, 15);
 
 	}
-
+		//vẽ cây đồ thị
 	@Override
 	public void paint(Graphics g2d) {
 		if (DrawGraphics.bg != null) {
 			int V = DrawGraphics.bg.length; // số đỉnh
 			int tmp[][] = DrawGraphics.bg; // ma trận trọng số
-			ARR_SIZE =4;
+			ARR_SIZE =5;
 			Graphics2D g = (Graphics2D) g2d.create();
 			RenderingHints hints = new RenderingHints(RenderingHints.KEY_ANTIALIASING,
 					RenderingHints.VALUE_ANTIALIAS_ON);
@@ -42,6 +42,7 @@ public class GraphDraw extends JPanel {
 			Color c1 = new Color(102, 255, 51);
 			Color c2 = new Color(0, 0, 102);
 			Font font = new Font("Monaco", Font.BOLD, 15);
+			g.setStroke((Stroke) new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 			for (int i = 0; i < V; i++) { // vẽ đỉnh
 				g.setColor(c1);
 				g.fillOval(Main.vertexs.get(i).getX(), Main.vertexs.get(i).getY(), 25, 25);
@@ -67,23 +68,64 @@ public class GraphDraw extends JPanel {
 							x2 += 26;
 						}
 						if (y1 > y2) {
-							y1 += 13;
-							y2 += 13;
+							y1 += 10;
+							y2 += 10;
 						} else {
-							y1 += 13;
-							y2 += 13;
+							y1 += 10;
+							y2 += 10;
 						}
-						drawArrow(g, x1, y1, x2, y2);
+						if(tmp[j][i] != 0) g.drawLine(x1, y1, x2, y2); // có đường đi ngược lại
+						else drawArrow(g, x1, y1, x2, y2);
 						g.drawString(tmp[i][j] + "", (x1 + x2) / 2, (y1 + y2) / 2);
 					}
 				}
 			}
 			paintResult(g);
 			paintKPath(g);
+			paintMinimumTree(g);
 		}
 
 	}
-
+	// vẽ cây khung nhỏ nhất
+	private void paintMinimumTree(Graphics2D g2d) {
+		if(Main.parent !=null) {
+			int tmp[] = Main.parent;
+			Graphics2D g = (Graphics2D) g2d.create();
+			RenderingHints hints = new RenderingHints(RenderingHints.KEY_ANTIALIASING,
+					RenderingHints.VALUE_ANTIALIAS_ON);
+			g.setRenderingHints(hints);
+			//set font and color
+			g.setStroke((Stroke) new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+			Font font = new Font("Monaco", Font.BOLD, 15);
+			Color  color = new Color(255,0,0);
+			g.setFont(font);
+			g.setColor(color);
+			for(int i=1;i<tmp.length;i++) {
+				int first = tmp[i]; // đỉnh đầu
+				int last = i;  // đỉnh cuối
+				int x1 = Main.vertexs.get(first).getX();
+				int y1 = Main.vertexs.get(first).getY();
+				int x2 = Main.vertexs.get(last).getX();
+				int y2 = Main.vertexs.get(last).getY();
+				if (x1 < x2) {
+					x1 += 24;
+					x2 -= 2;
+				} else {
+					x1 -= 2;
+					x2 += 26;
+				}
+				if (y1 > y2) {
+					y1 += 10;
+					y2 += 10;
+				} else {
+					y1 += 10;
+					y2 += 10;
+				}
+				g.drawLine(x1, y1, x2, y2);
+			}
+		}
+			
+		}
 	// vẽ cạnh có hướng
 	static void drawArrow(Graphics g1, int x1, int y1, int x2, int y2) {
 		Graphics2D g = (Graphics2D) g1.create();
@@ -129,11 +171,11 @@ public class GraphDraw extends JPanel {
 					x2 += 26;
 				}
 				if (y1 > y2) {
-					y1 += 13;
-					y2 += 13;
+					y1 += 10;
+					y2 += 10;
 				} else {
-					y1 += 13;
-					y2 += 13;
+					y1 += 10;
+					y2 += 10;
 				}
 				drawArrow(g, x1, y1, x2, y2);
 				g.drawString(tmp[first][last] + "", (x1 + x2) / 2, (y1 + y2) / 2);
@@ -179,11 +221,11 @@ public class GraphDraw extends JPanel {
 							x2 += 26;
 						}
 						if (y1 > y2) {
-							y1 += 13;
-							y2 += 13;
+							y1 += 10;
+							y2 += 10;
 						} else {
-							y1 += 13;
-							y2 += 13;
+							y1 += 10;
+							y2 += 10;
 						}
 						drawArrow(g, x1, y1, x2, y2);
 						g.drawString(tmp[first][last] + "", (x1 + x2) / 2, (y1 + y2) / 2);

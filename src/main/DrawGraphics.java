@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -26,6 +27,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -34,33 +36,36 @@ public class DrawGraphics implements ActionListener{
 	 JPanel matrix, graph;
 	 JTextField txtVertex, txtweight;
 	 JFrame frame;
-	 Choice choicefirst, choicelast,from,to,choiceAlgorithm;
+	 Choice choicefirst, choicelast,from,to,choiceAlgorithm,choiseMinimumTree;
 	 JLabel txtResult,txtCost,txtNumberRoad,labelResult;
 	 static int bg[][];
 	 int S,F,V,E;
 	 ArrayList<Edge> edges = new ArrayList<>();
 	 GraphDraw graphDraw;
 	 JPanel right;
+	 ButtonGroup btnGroup;
+	 JRadioButton radio1 ,radio2;
 	 
 public DrawGraphics() {
 	//khởi tạo JFrame
 	frame = new JFrame();
 	frame.setLayout(null);
-	frame.setSize(1000, 600);
-	frame.setLocation(200, 30);
+	frame.setSize(1100, 600);
+	frame.setLocation(100, 30);
 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	frame.setResizable(false);
 	
 	// khởi tạo JPanel chọn thuật toán
 	right = new JPanel(null);
-	right.setBounds(700, 0, 300, 600);
+	right.setBounds(700, 0, 400, 600);
 	right.setBackground(Color.CYAN);
 	
 	// ma trận trọng số <=> đồ thị
 	JPanel down = new JPanel();
 	down.setBackground(Color.WHITE);
 	down.setBounds(0, 550, 700, 20);
-	btnConvert = new JButton("Chuyển đổi");
+	ImageIcon img = new ImageIcon("Data\\button1.png");
+	btnConvert = new JButton(img);
 	btnConvert.setBounds(300, 550, 100, 20);
 	frame.add(btnConvert);
 	frame.add(down);
@@ -71,16 +76,16 @@ public DrawGraphics() {
 	right.add(lVertex);
     txtVertex = new JTextField(5);
     txtVertex.setText("");
-	txtVertex.setBounds(100, 10, 30, 20);
+	txtVertex.setBounds(100, 10, 60, 20);
 	right.add(txtVertex);
 	init = new JButton("Khởi tạo");
-	init.setBounds(80, 50, 120, 20);
+	init.setBounds(140, 50, 120, 20);
 	right.add(init);
 	init.addActionListener(this);
 	
 	//chọn từ file
     loadFile = new JButton("Chọn từ File");
-	loadFile.setBounds(150, 10, 120, 20);
+	loadFile.setBounds(200, 10, 120, 20);
 	loadFile.addActionListener(this);
 	right.add(loadFile);
 	
@@ -101,49 +106,69 @@ public DrawGraphics() {
 	right.add(choicelast);
 	
 	JLabel weight = new JLabel("Trọng số");
-	weight.setBounds(180, 80, 100, 20);
+	weight.setBounds(170, 80, 100, 20);
 	right.add(weight);
     txtweight = new JTextField(5);
-	txtweight.setBounds(180, 110, 50, 22);
+	txtweight.setBounds(170, 110, 50, 22);
 	right.add(txtweight);
 	
-	addweight = new JButton("Cập nhật trọng số");
-	addweight.setBounds(70, 150, 150, 20);
+	addweight = new JButton("Thêm cạnh");
+	addweight.setBounds(250, 110, 100, 22);
 	right.add(addweight);
 	addweight.addActionListener(this);
 	
-	//chọn đường đi
-	JLabel txtfindRoad = new JLabel("Tìm đường đi:  Từ");
-	txtfindRoad.setBounds(10, 185, 115, 20);
-	right.add(txtfindRoad);
-	
-	from = new Choice();
-	from.setBounds(125, 184, 60, 22);
-	right.add(from);
-	
-	JLabel txtfrom = new JLabel("đến");
-	txtfrom.setBounds(190, 184, 30, 22);
-	right.add(txtfrom);
-	
-    to = new Choice();
-	to.setBounds(220, 184, 60, 22);
-	right.add(to);
-	
-	//chọn thuật toán
-	JLabel labelAlgorithm = new JLabel("Chọn thuật toán");
-	labelAlgorithm.setBounds(10, 240, 100, 22);
-	right.add(labelAlgorithm);
-	
-    choiceAlgorithm = new Choice();
-	choiceAlgorithm.setBounds(120, 240, 150, 22);
+	//chọn bài toán
+	btnGroup = new ButtonGroup();
+    radio1 = new JRadioButton("Tìm đường đi ngắn nhất");
+	radio2 = new JRadioButton("Cây khung nhỏ nhất");
+	btnGroup.add(radio1);
+	btnGroup.add(radio2);
+	radio1.setBounds(5, 160, 180, 20);
+	radio2.setBounds(230, 160, 150, 20);
+	radio1.setBackground(null);
+	radio2.setBackground(null);
+	radio1.setSelected(true);
+	right.add(radio1);
+	right.add(radio2);
+	radio1.addActionListener(this);
+	radio2.addActionListener(this);
+			
+	// chọn thuật toán tìm đường
+	choiceAlgorithm = new Choice();
+	choiceAlgorithm.setBounds(30, 192, 110, 22);
 	choiceAlgorithm.addItem("Bellman-Ford");
 	choiceAlgorithm.addItem("Dijkstra");
 	choiceAlgorithm.addItem("Floyd-Warshall");
 	choiceAlgorithm.addItem("Tìm k đường đi ngắn nhất");
 	right.add(choiceAlgorithm);
 	
-	gofind = new JButton("Tìm đường");
-	gofind.setBounds(145, 275, 100, 22);
+	// chọn thuật toán cây khung
+	choiseMinimumTree = new Choice();
+	choiseMinimumTree.setBounds(250, 192, 110, 22);
+	choiseMinimumTree.addItem("Prim");
+	choiseMinimumTree.addItem("Kruskal");
+	right.add(choiseMinimumTree);
+	//chọn đường đi
+	JLabel txtfindRoad = new JLabel("Từ");
+	txtfindRoad.setBounds(10, 230, 20, 20);
+	right.add(txtfindRoad);
+	
+	from = new Choice();
+	from.setBounds(35, 230, 50, 22);
+	right.add(from);
+	
+	JLabel txtfrom = new JLabel("đến");
+	txtfrom.setBounds(90, 230, 30, 22);
+	right.add(txtfrom);
+	
+    to = new Choice();
+	to.setBounds(120, 230, 50, 22);
+	right.add(to);
+	
+    
+	
+	gofind = new JButton("Xem kết quả");
+	gofind.setBounds(124, 275, 150, 22);
 	right.add(gofind);
 	gofind.addActionListener(this);
     
@@ -153,7 +178,7 @@ public DrawGraphics() {
 	
     //view hiển thị  kq
     JLabel kq = new JLabel("KẾT QUẢ");
-    kq.setBounds(120, 300, 260, 50);
+    kq.setBounds(170, 300, 260, 50);
     right.add(kq);
     
     txtNumberRoad = new JLabel("");
@@ -170,13 +195,13 @@ public DrawGraphics() {
     
     // tạo lại đồ thị
     reset = new JButton("Reset");
-    reset.setBounds(10, 530, 100, 20);
+    reset.setBounds(40, 530, 100, 20);
     reset.addActionListener(this);
     right.add(reset);
     
     //lưu kết quả vào file
     saveResult = new JButton("Lưu kết quả(.txt)");
-    saveResult.setBounds(130, 530, 140, 20);
+    saveResult.setBounds(200, 530, 140, 20);
     right.add(saveResult);
     saveResult.addActionListener(this);
     setView(false);
@@ -233,32 +258,43 @@ if(e.getSource()==init) { //khởi tạo số đỉnh
 }else if(e.getSource()==gofind) { // chọn thuật toán 
 	Main.cost="";
 	Main.txtNumberRoad="";
-	labelResult.setText("Đường đi ngắn nhất là: ");
-	int start=from.getSelectedIndex() ;
-	int finish =to.getSelectedIndex() ;
-	S =start;
-	F =finish;
-	Graph graph = new Graph(V,E,edges);
-	int Algorithm =choiceAlgorithm.getSelectedIndex() ;
-	Main main = new Main();
-	if(Algorithm==0) {
-		main.bellmanford(graph,S,F);
-	}else if(Algorithm==1) {
-		main.dijkstra(bg,S,F);
-	}else if(Algorithm==2) {
-		main.Floyd(bg, S, F);
-	}else if(Algorithm==3) {
-		main.findAllShortestPath(graph,S,F);
+	if(radio1.isSelected()) {
+		labelResult.setText("Đường đi ngắn nhất là: ");
+		int start=from.getSelectedIndex() ;
+		int finish =to.getSelectedIndex() ;
+		S =start;
+		F =finish;
+		Graph graph = new Graph(V,E,edges);
+		int Algorithm =choiceAlgorithm.getSelectedIndex() ;
+		Main main = new Main();
+		if(Algorithm==0) {
+			main.bellmanford(graph,S,F);
+		}else if(Algorithm==1) {
+			main.dijkstra(bg,S,F);
+		}else if(Algorithm==2) {
+			main.Floyd(bg, S, F);
+		}else if(Algorithm==3) {
+			txtResult.setBounds(10, 372, 300, 150);
+			main.findAllShortestPath(graph,S,F);
+		}
+	}else {
+		Main.prim(bg);
+		labelResult.setText("Tập cạnh của cây khung nhỏ nhất là: ");
+		txtResult.setBounds(10, 330, 300, 150);
+		
 	}
-	txtResult.setText(Main.result);
-	txtCost.setText(Main.cost);
 	txtNumberRoad.setText(Main.txtNumberRoad);
+	txtCost.setText(Main.cost);
+	txtResult.setText(Main.result);
 	graphDraw.repaint();
 	frame.setVisible(true);
+	
+	
 }else if(e.getSource()==reset) { // reset đồ thị
 	setView(false);
 	Main.path=null;
 	Main.Kpath=null;
+	Main.parent =null;
 	bg=null;
 	txtNumberRoad.setText("");
 	txtVertex.setText("");
@@ -367,7 +403,7 @@ if(e.getSource()==init) { //khởi tạo số đỉnh
 		frame.remove(graphDraw);
 		graphDraw=null;
 		matrix = new JPanel(new GridLayout(this.V,this.V));
-		matrix.setBounds(270, 170, 250, 250);
+		matrix.setBounds(190, 115, 300, 300);
 		drawMatrix(bg); // vẽ ma trận trọng số
 		frame.add(matrix); // add vào frame
 	}
@@ -425,6 +461,7 @@ private void drawMatrix(int[][] bg) {
 }
 // hiển thị button chọn
 private void setView(boolean status) {
+	choiseMinimumTree.setEnabled(status);
 	addweight.setEnabled(status);
 	btnConvert.setEnabled(status);
 	gofind.setEnabled(status);
