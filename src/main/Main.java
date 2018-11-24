@@ -1,13 +1,15 @@
 package main;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 
 public class Main{
 	static int INFINITY = 99999; 
 	static String result="",cost="",txtNumberRoad="";
 	static ArrayList<Vertex> vertexs = new ArrayList<>(); // chứa các đỉnh của đồ thị
-	static ArrayList path =null;// chứa các đỉnh kết quả
-	static ArrayList Kpath =null; //chứa k đường đi 
-	static int[] parent =null; // chứa các đỉnh cha của cây khung nhỏ nhất
+	static ArrayList path =null;						  // chứa các đỉnh kết quả
+	static ArrayList Kpath =null;						  //chứa k đường đi 
+	static int[] parent =null;					          // chứa các đỉnh cha của cây khung nhỏ nhất
 public static void main(String []agrs) {
 	vertexs.add(new Vertex(60, 239, "1"));
 	vertexs.add(new Vertex(268, 252, "2"));
@@ -19,12 +21,12 @@ public static void main(String []agrs) {
 	vertexs.add(new Vertex(140, 405, "8"));
 	vertexs.add(new Vertex(643, 204, "9"));
 	vertexs.add(new Vertex(550, 37, "10"));
-	new DrawGraphics();
+	new DisplayComponent();
 }
 
-//bellman ford algorithm
+//bellman-ford algorithm
 public void bellmanford(Graph g, int source,int finish) {
-	clear(); // xóa kết quả cũ
+	clear(); // reset
 	int i, j, u, v, w;
 	int tV = g.getV(); //tổng số đỉnh của đồ thị
 	int tE = g.getE(); //tổng số cạnh
@@ -43,7 +45,7 @@ public void bellmanford(Graph g, int source,int finish) {
 			u = g.getEdges().get(j).getFirstPoint();
 			v = g.getEdges().get(j).getLastPoint();
 			w = g.getEdges().get(j).getWeight();
-			// có cạnh nối và kc cũ lớn hơn kc mới
+			// có cạnh nối và khoảng cách cũ lớn hơn khoảng cách mới
 			if(d[u] != INFINITY && d[v] > d[u] + w) {
 				d[v] = d[u] + w;
 				p[v] = u;
@@ -80,7 +82,7 @@ private void displayPath(int[] p,int source, int finish,int []d) {
 	}else if(check>p.length || d[finish]==INFINITY) {
 		result="Không tồn tại đường đi từ "+(source+1)+" đến "+(finish+1);
 	}else {
-		path = new ArrayList<>();// chứa các đỉnh kết quả
+		path = new ArrayList<>();		// chứa các đỉnh kết quả
 		path.clear();
 		for(int j=roadlist.size()-1;j>0;j--) {
 			int temp = (int) roadlist.get(j)+1;
@@ -93,7 +95,7 @@ private void displayPath(int[] p,int source, int finish,int []d) {
 		cost="Chi phí là: "+d[finish];
 	}
 }
-//dijkstra algorithm
+//Thuật toán dijkstra
 public  void dijkstra(int[][] graph, int source, int finish){
 	clear();
 	int check =0; // kiểm tra trọng số âm
@@ -140,26 +142,12 @@ int minDistance(int dist[], Boolean visit[]) {  // tìm đỉnh gần nhất
     return min_index; 
 }
 
-private void view2D(int[] graph) {
-	for(int i=0;i<graph.length;i++) {
-		System.out.print(graph[i]+" ");
-	}
-}
-private void view3D(int[][] graph) {
-	for(int i=0;i<graph.length;i++) {
-		for(int j=0;j<graph.length;j++) {
-			System.out.print(graph[i][j]+" ");
-		}
-		System.out.println();
-	}
-}
-
-
 // Floyd
 public  void Floyd(int[][]bg,int start,int finish) {
 	clear();
 	int a[][] = new int[bg.length][bg.length];
-	for(int i=0;i<bg.length;i++) {  // Bước 1
+	// Bước 1
+	for(int i=0;i<bg.length;i++) {  
 		for(int j =0;j<bg.length;j++) {
 			if(i != j && bg[i][j]==0) {
 				a[i][j]=INFINITY;
@@ -168,14 +156,15 @@ public  void Floyd(int[][]bg,int start,int finish) {
 			}
 		}
 	}
-	
-	int p[][] = new int[a.length][a.length]; // Bước 2
+	 // Bước 2
+	int p[][] = new int[a.length][a.length];
 	for(int i =0;i<a.length;i++) {
 		for(int j =0;j<a.length;j++) {
 		 p[i][j]=-1;
 		}
 	}
-	for(int k= 0;k<a.length;k++) { // Bước 3
+	// Bước 3
+	for(int k= 0;k<a.length;k++) { 
 		for(int i =0;i<a.length;i++) {
 			for(int j =0;j<a.length;j++) {
 				if(a[i][k]+a[k][j] < a[i][j]) {
@@ -185,7 +174,8 @@ public  void Floyd(int[][]bg,int start,int finish) {
 			}
 		}
 	}
-	displayPathFloyd(start,finish,p,a); // Bước 4: hiển thị chi tiết đường đi
+	// Bước 4: hiển thị chi tiết đường đi
+	displayPathFloyd(start,finish,p,a); 
 }
 
 private static void displayPathFloyd(int start, int finish,int[][]p,int[][]cost) {
@@ -256,7 +246,7 @@ private static void displayPathFloyd(int start, int finish,int[][]p,int[][]cost)
 				u = g.getEdges().get(j).getFirstPoint();
 				v = g.getEdges().get(j).getLastPoint();
 				w = g.getEdges().get(j).getWeight();
-				// có cạnh nối và kc cũ lớn hơn kc mới
+				// có cạnh nối và kc cũ lớn hơn = kc mới
 				if(d[u] != INFINITY && d[v] >= d[u] + w) {
 					if(d[v] > d[u] + w) {
 						d[v] = d[u] + w;
@@ -362,7 +352,6 @@ private String displayKPath(int source, int finish, int[] d, int[] p, ArrayList<
 		}
 
 		// lấy đường đi chi tiết từ tập hợp tất cả đường đi total
-		// source , finish
 		ArrayList roads = new ArrayList<>();
 		for(int m =0;m<total.size();m++) {
 			ArrayList Roadm = new ArrayList<>(); // tạo mảng lưu 1 đường đi
@@ -481,7 +470,7 @@ private static int getIndex(ArrayList<Node> list, int key) {
       } 
       
       key[0] = 0;   // chi phí tới chính nó là 0   
-      parent[0] = -1; // đỉnh trước 0 là -1 (k tồn tại)
+      parent[0] = -1; // đỉnh trước 0 là -1 
       
       for (int i = 0; i < graph.length-1; i++)  { 
           int u = minKey(key, mstSet);  // lấy ra đỉnh có cạnh nhẹ nhất
@@ -497,19 +486,11 @@ private static int getIndex(ArrayList<Node> list, int key) {
     for(int i =0;i<key.length;i++)
     	sumCost+=key[i];
     cost="Độ dài của cây khung là: "+sumCost;
+    // tập cạnh của cây khung
     for(int i =1;i<parent.length;i++) {
     	result+="("+(parent[i]+1)+","+(i+1)+")  ";
     }
   }
-
-private static void clear() {
-	if(path!=null) path.clear();
-	if(Kpath!=null) Kpath.clear();
-	if(parent!=null) parent=null;
-	result="";
-	txtNumberRoad="";
-}
-
 private static int minKey(int[] key, Boolean[] mstSet) {
     // khởi tạo giá trị
     int min = Integer.MAX_VALUE, min_index=-1; 
@@ -521,6 +502,99 @@ private static int minKey(int[] key, Boolean[] mstSet) {
     }
     return min_index; 
 } 
+// thuật toán kruskal
+public static  void Kruskal(int bg[][]) {
+	clear();
+	ArrayList<Edge> allEdges = new ArrayList<>();
+	parent=new int[bg.length];
+	for(int i=0;i<parent.length;i++)
+		parent[i]=-1;
+//	gán dữ liệu cho cạnh
+	for(int i=0;i<bg.length;i++) {
+		for(int j=0;j<bg.length;j++) {
+			if(bg[i][j]!=0 && i!=j) {
+				Edge edge = new Edge(i, j, bg[i][j]);
+				if(!checkEdge(edge,allEdges))
+				allEdges.add(edge);
+			}
+		}
+	}
+	
+   	// khởi tạo hàng đợi ưu tiên đc sắp xếp theo weight
+    PriorityQueue<Edge> pq = new PriorityQueue<>(allEdges.size(), 
+    						 Comparator.comparingInt(o -> o.getWeight()));
 
+    // thêm tất cả các cạnh vào hàng đợi
+    for (int i = 0; i <allEdges.size() ; i++) {
+        pq.add(allEdges.get(i));
+    }
+    	
+    // tạo mảng cha đánh dấu
+    int [] temp = new int[bg.length];
+    for (int i = 0; i <bg.length ; i++) {
+    	temp[i] = i;
+    }
+   
+    ArrayList<Edge> mst = new ArrayList<>(); // lưu tập cạnh của CKNN
+
+    int index = 0;
+    while(index<bg.length-1){
+        Edge edge = pq.remove();
+        //kiểm tra cạnh được chọn có tạo chu trình
+        int x_set = find(temp, edge.getFirstPoint());
+        int y_set = find(temp, edge.getLastPoint());
+        
+        if(x_set !=y_set){
+        	 // thêm vào kq 
+            mst.add(edge);
+            index++;
+            union(temp,x_set,y_set);
+        } 
+    }   
+  // chuyển tập cạnh thành mảng 1 chiều
+ for(int i =0;i<mst.size();i++) {
+    	int first =mst.get(i).getFirstPoint();
+    	int last = mst.get(i).getLastPoint();
+    	parent[last]=first;
+    }
+ // chi phí
+ int sumCost =0;
+ for(int i =0;i<mst.size();i++) {
+	sumCost+=mst.get(i).getWeight(); 
+	result+="("+(mst.get(i).getFirstPoint()+1)+","+(mst.get(i).getLastPoint()+1)+")  ";
+ }
+
+ cost="Độ dài của cây khung là: "+sumCost;
+ 
+}
+// kiểm tra cạnh đã tồn tại trong tập cạnh
+private static boolean checkEdge(Edge edge, ArrayList<Edge> allEdges) {
+	for(int i =0; i<allEdges.size();i++) {
+		Edge tmp = allEdges.get(i);
+		if(edge.getFirstPoint()==tmp.getLastPoint() && edge.getLastPoint()==tmp.getFirstPoint())
+			return true;
+	}
+	return false;
+}
+
+public static int find(int [] temp, int vertex){
+    if(temp[vertex]!=vertex)
+        return find(temp, temp[vertex]);;
+    return vertex;
+}
+
+public static void union(int [] temp, int x, int y){
+    int x_set_parent = find(temp, x);
+    int y_set_parent = find(temp, y);
+    // đặt cha của y_set là x_set
+    temp[y_set_parent] = x_set_parent;
+}
+private static void clear() {
+	if(path!=null) path.clear();
+	if(Kpath!=null) Kpath.clear();
+	if(parent!=null) parent=null;
+	result="";
+	txtNumberRoad="";
+}
 
 }

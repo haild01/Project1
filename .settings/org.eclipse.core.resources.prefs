@@ -1,6 +1,7 @@
 eclipse.preferences.version=1
-encoding//src/main/DrawGraphics.java=UTF-8
-encoding//src/main/GraphDraw.java=UTF-8
+encoding//src/main/DisplayComponent.java=UTF-8
+encoding//src/main/DrawGraph.java=UTF-8
+encoding//src/main/Graph.java=UTF-8
 encoding//src/main/Main.java=UTF-8
 encoding//src/main/Node.java=UTF-8
 encoding//src/main/Vertex.java=UTF-8

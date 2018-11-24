@@ -15,11 +15,11 @@ import javax.management.ImmutableDescriptor;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class GraphDraw extends JPanel {
+public class DrawGraph extends JPanel {
 	Font f2;
 	private static int ARR_SIZE = 0;
 
-	public GraphDraw() {
+	public DrawGraph() {
 		setSize(700, 700);
 		setVisible(true);
 		add(new JLabel("Graph"));
@@ -29,9 +29,9 @@ public class GraphDraw extends JPanel {
 		//vẽ cây đồ thị
 	@Override
 	public void paint(Graphics g2d) {
-		if (DrawGraphics.bg != null) {
-			int V = DrawGraphics.bg.length; // số đỉnh
-			int tmp[][] = DrawGraphics.bg; // ma trận trọng số
+		if (DisplayComponent.bg != null) {
+			int V = DisplayComponent.bg.length; // số đỉnh
+			int tmp[][] = DisplayComponent.bg; // ma trận trọng số
 			ARR_SIZE =5;
 			Graphics2D g = (Graphics2D) g2d.create();
 			RenderingHints hints = new RenderingHints(RenderingHints.KEY_ANTIALIASING,
@@ -100,28 +100,33 @@ public class GraphDraw extends JPanel {
 			Color  color = new Color(255,0,0);
 			g.setFont(font);
 			g.setColor(color);
+		
 			for(int i=1;i<tmp.length;i++) {
-				int first = tmp[i]; // đỉnh đầu
-				int last = i;  // đỉnh cuối
-				int x1 = Main.vertexs.get(first).getX();
-				int y1 = Main.vertexs.get(first).getY();
-				int x2 = Main.vertexs.get(last).getX();
-				int y2 = Main.vertexs.get(last).getY();
-				if (x1 < x2) {
-					x1 += 24;
-					x2 -= 2;
-				} else {
-					x1 -= 2;
-					x2 += 26;
+				if(tmp[i]!=-1) {
+					int  first = tmp[i]; // nút bắt đầu
+					int  last = i;  // nút kết thúc
+				
+					int x1 = Main.vertexs.get(first).getX();
+					int y1 = Main.vertexs.get(first).getY();
+					int x2 = Main.vertexs.get(last).getX();
+					int y2 = Main.vertexs.get(last).getY();
+					if (x1 < x2) {
+						x1 += 24;
+						x2 -= 2;
+					} else {
+						x1 -= 2;
+						x2 += 26;
+					}
+					if (y1 > y2) {
+						y1 += 10;
+						y2 += 10;
+					} else {
+						y1 += 10;
+						y2 += 10;
+					}
+					g.drawLine(x1, y1, x2, y2);
 				}
-				if (y1 > y2) {
-					y1 += 10;
-					y2 += 10;
-				} else {
-					y1 += 10;
-					y2 += 10;
-				}
-				g.drawLine(x1, y1, x2, y2);
+		
 			}
 		}
 			
@@ -144,7 +149,7 @@ public class GraphDraw extends JPanel {
 	public static void paintResult(Graphics g2d) {
 		if (Main.path != null) {
 			ARR_SIZE =7;
-			int tmp[][] = DrawGraphics.bg; // ma trận trọng số
+			int tmp[][] = DisplayComponent.bg; // ma trận trọng số
 			ArrayList path = Main.path;
 			Graphics2D g = (Graphics2D) g2d.create();
 			RenderingHints hints = new RenderingHints(RenderingHints.KEY_ANTIALIASING,
@@ -189,7 +194,7 @@ public class GraphDraw extends JPanel {
 	public static void paintKPath(Graphics g2d) {
 		if(Main.Kpath !=null) {
 			ARR_SIZE =7;
-			int tmp[][] = DrawGraphics.bg; // ma trận trọng số
+			int tmp[][] = DisplayComponent.bg; // ma trận trọng số
 			ArrayList path = Main.path;
 			Graphics2D g = (Graphics2D) g2d.create();
 			RenderingHints hints = new RenderingHints(RenderingHints.KEY_ANTIALIASING,

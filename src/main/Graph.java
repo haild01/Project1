@@ -3,8 +3,8 @@ package main;
 import java.util.ArrayList;
 
 public class Graph {
-private int V; //total number of vertices
-private int E; //total number of edges
+private int V; //số đỉnh của đồ thị
+private int E; //số cạnh của đồ thị
 ArrayList<Edge>  edges = new ArrayList<>();
 public Graph(int v, int e, ArrayList<Edge>  edges) {
 	V = v;

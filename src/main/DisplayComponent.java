@@ -31,7 +31,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-public class DrawGraphics implements ActionListener{
+public class DisplayComponent implements ActionListener{
 	 JButton init,addweight,gofind,reset,saveResult,loadFile,btnConvert;
 	 JPanel matrix, graph;
 	 JTextField txtVertex, txtweight;
@@ -41,12 +41,12 @@ public class DrawGraphics implements ActionListener{
 	 static int bg[][];
 	 int S,F,V,E;
 	 ArrayList<Edge> edges = new ArrayList<>();
-	 GraphDraw graphDraw;
+	 DrawGraph graphDraw;
 	 JPanel right;
 	 ButtonGroup btnGroup;
 	 JRadioButton radio1 ,radio2;
 	 
-public DrawGraphics() {
+public DisplayComponent() {
 	//khởi tạo JFrame
 	frame = new JFrame();
 	frame.setLayout(null);
@@ -64,7 +64,7 @@ public DrawGraphics() {
 	JPanel down = new JPanel();
 	down.setBackground(Color.WHITE);
 	down.setBounds(0, 550, 700, 20);
-	ImageIcon img = new ImageIcon("Data\\button1.png");
+	ImageIcon img = new ImageIcon("Data\\icon.png");
 	btnConvert = new JButton(img);
 	btnConvert.setBounds(300, 550, 100, 20);
 	frame.add(btnConvert);
@@ -222,7 +222,7 @@ if(e.getSource()==init) { //khởi tạo số đỉnh
 			setView(true);
 			this.E=0; // số cạnh
 			bg = new int [this.V][this.V];
-			graphDraw = new GraphDraw();
+			graphDraw = new DrawGraph();
 			frame.add(graphDraw);
 			addItemSelect(); 
 			frame.setVisible(true);	
@@ -278,9 +278,18 @@ if(e.getSource()==init) { //khởi tạo số đỉnh
 			main.findAllShortestPath(graph,S,F);
 		}
 	}else {
-		Main.prim(bg);
-		labelResult.setText("Tập cạnh của cây khung nhỏ nhất là: ");
-		txtResult.setBounds(10, 330, 300, 150);
+		int Algorithm =choiseMinimumTree.getSelectedIndex() ;
+		if(Algorithm==0) { // prim
+			Main.prim(bg);
+			labelResult.setText("Tập cạnh của cây khung nhỏ nhất là: ");
+			txtResult.setBounds(10, 330, 300, 150);
+		}else {
+			Main.Kruskal(bg);
+			labelResult.setText("Tập cạnh của cây khung nhỏ nhất là: ");
+			txtResult.setBounds(10, 330, 300, 150);
+			
+		}
+		
 		
 	}
 	txtNumberRoad.setText(Main.txtNumberRoad);
@@ -352,7 +361,7 @@ if(e.getSource()==init) { //khởi tạo số đỉnh
 				}
 			}
 			
-			graphDraw = new GraphDraw();
+			graphDraw = new DrawGraph();
 			frame.add(graphDraw);
 			addItemSelect(); 
 			setView(true);
@@ -397,7 +406,7 @@ if(e.getSource()==init) { //khởi tạo số đỉnh
 	if(graphDraw ==null) {
 		frame.remove(matrix);
 		matrix=null;
-		graphDraw = new GraphDraw();
+		graphDraw = new DrawGraph();
 		frame.add(graphDraw);	
 	}else {
 		frame.remove(graphDraw);
